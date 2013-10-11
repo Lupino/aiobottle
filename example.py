@@ -10,7 +10,9 @@ def example():
 
     return content
 
-def main(host='localhost', port='8080'):
+def main(host='localhost', port=8080):
     from bottle import run
 
     run(app, host = host, port = port, server = 'asyncbottle:TulipServer')
+    
+main()
