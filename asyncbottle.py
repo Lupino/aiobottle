@@ -12,17 +12,15 @@ import inspect
 
 import itertools
 
-logger = logging.getLogger('server')
-
+logger = logging.getLogger('asyncbottle')
 FORMAT = '%(asctime)-15s - %(message)s'
-logger = logging.getLogger('server')
 logger.setLevel(logging.DEBUG)
 formater = logging.Formatter(FORMAT)
 ch = logging.StreamHandler()
 ch.setFormatter(formater)
 logger.addHandler(ch)
 
-class TulipServer(ServerAdapter):
+class AsyncServer(ServerAdapter):
     def run(self, handler):
         def wsgi_app(env, start):
             def start_response(status_line, headerlist, exc_info=None):
@@ -43,7 +41,7 @@ class TulipServer(ServerAdapter):
         except KeyboardInterrupt:
             pass
 
-class TulipBottle(Bottle):
+class AsyncBottle(Bottle):
 
     def _cast(self, out, peek=None):
         """ Try to convert the parameter into something WSGI compatible and set

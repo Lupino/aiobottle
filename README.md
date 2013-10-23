@@ -21,7 +21,7 @@ Quick start
     def main(host='localhost', port=8080):
         from bottle import run
 
-        run(app, host = host, port = port, server = 'asyncbottle:AsyncIOServer')
+        run(app, host = host, port = port, server = 'asyncbottle:AsyncServer')
 
     main()
 
