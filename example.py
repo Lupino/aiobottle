@@ -1,7 +1,7 @@
-from asyncbottle import TulipBottle
+from asyncbottle import AsyncBottle
 import asynchttp
 
-app = TulipBottle()
+app = AsyncBottle()
 
 @app.get('/')
 def example():
@@ -13,6 +13,6 @@ def example():
 def main(host='localhost', port=8080):
     from bottle import run
 
-    run(app, host = host, port = port, server = 'asyncbottle:TulipServer')
-    
+    run(app, host = host, port = port, server = 'asyncbottle:AsyncIOServer')
+
 main()

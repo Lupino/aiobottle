@@ -1,15 +1,15 @@
 asyncbottle
 ============
 
-warper bottle use asynchttp base on  Tulip (PEP-3156)
+warper bottle use asynchttp base on  Asyncio (PEP-3156)
 
 Quick start
 -----------
 
-    from asyncbottle import TulipBottle
+    from asyncbottle import AsyncBottle
     import asynchttp
 
-    app = TulipBottle()
+    app = AsyncBottle()
 
     @app.get('/')
     def example():
@@ -21,8 +21,8 @@ Quick start
     def main(host='localhost', port=8080):
         from bottle import run
 
-        run(app, host = host, port = port, server = 'asyncbottle:TulipServer')
-        
+        run(app, host = host, port = port, server = 'asyncbottle:AsyncIOServer')
+
     main()
 
 Requirements
@@ -30,7 +30,7 @@ Requirements
 
 Python 3.3
 
-tulip <http://code.google.com/p/tulip>
+asyncio <http://code.google.com/p/tulip>
 
 asynchttp <https://github.com/fafhrd91/asynchttp>
 

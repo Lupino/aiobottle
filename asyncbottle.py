@@ -6,7 +6,7 @@ import sys
 
 import logging
 
-import tulip
+import asyncio
 from asynchttp.wsgi import WSGIServerHttpProtocol
 import inspect
 
@@ -33,7 +33,7 @@ class TulipServer(ServerAdapter):
                     env['RAW_URI'], status_code, length))
                 return start(status_line, headerlist, exc_info)
             return handler(env, start_response)
-        loop = tulip.get_event_loop()
+        loop = asyncio.get_event_loop()
         f = loop.create_server(
                 lambda: WSGIServerHttpProtocol(wsgi_app, loop = loop, readpayload=True),
                 self.host, self.port)
@@ -52,7 +52,7 @@ class TulipBottle(Bottle):
         iterable of strings and iterable of strs
         """
 
-        if isinstance(out, tulip.Future) or inspect.isgenerator(out):
+        if isinstance(out, asyncio.Future) or inspect.isgenerator(out):
             out = yield from out
 
         # Empty output is done here
