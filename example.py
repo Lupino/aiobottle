@@ -8,7 +8,7 @@ def example():
     rsp = yield from aiohttp.request('GET', 'http://python.org')
     content = yield from rsp.read()
 
-    return content
+    return bytes(content)
 
 @app.get('/nomal')
 def nomal():
@@ -19,4 +19,5 @@ def main(host='localhost', port=8080):
 
     run(app, host = host, port = port, server = 'aiobottle:AsyncServer')
 
-main()
+if __name__ == '__main__':
+    main()

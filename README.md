@@ -1,11 +1,12 @@
 asyncbottle
 ============
 
-warper bottle use asynchttp base on  Asyncio (PEP-3156)
+a warper bottle use asynchttp base on  Asyncio (PEP-3156)
 
 Quick start
 -----------
 
+    # example.py
     from aiobottle import AsyncBottle
     import asynchttp
 
@@ -16,7 +17,7 @@ Quick start
         rsp = yield from asynchttp.request('GET', 'http://python.org')
         content = yield from rsp.read()
 
-        return content
+        return bytes(content)
 
     @app.get('/nomal')
     def nomal():
@@ -27,7 +28,13 @@ Quick start
 
         run(app, host = host, port = port, server = 'asyncbottle:AsyncServer')
 
-    main()
+    if __name__ == '__main__':
+        main()
+
+Run on gunicorn
+---------------
+
+    gunicorn -w 5 -k aiohttp.worker.AsyncGunicornWorker example:app
 
 Requirements
 -----------
