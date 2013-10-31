@@ -7,7 +7,7 @@ import sys
 import logging
 
 import asyncio
-from asynchttp.wsgi import WSGIServerHttpProtocol
+from aiohttp.wsgi import WSGIServerHttpProtocol
 import inspect
 
 import itertools

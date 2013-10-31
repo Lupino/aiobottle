@@ -1,11 +1,11 @@
 from asyncbottle import AsyncBottle
-import asynchttp
+import aiohttp
 
 app = AsyncBottle()
 
 @app.get('/')
 def example():
-    rsp = yield from asynchttp.request('GET', 'http://python.org')
+    rsp = yield from aiohttp.request('GET', 'http://python.org')
     content = yield from rsp.read()
 
     return content
