@@ -1,7 +1,7 @@
-asyncbottle
+aiobottle
 ============
 
-a warper bottle use asynchttp base on  Asyncio (PEP-3156)
+a warper bottle use aiohttp base on  Asyncio (PEP-3156)
 
 Quick start
 -----------
@@ -43,6 +43,6 @@ Python 3.3
 
 asyncio <http://code.google.com/p/tulip>
 
-asynchttp <https://github.com/fafhrd91/asynchttp>
+aiohttp <https://github.com/fafhrd91/aiohttp>
 
 bottle <http://bottlepy.org>
