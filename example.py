@@ -1,7 +1,7 @@
-from asyncbottle import AsyncBottle
+from aiobottle import AioBottle
 import aiohttp
 
-app = AsyncBottle()
+app = AioBottle()
 
 @app.get('/')
 def example():
@@ -13,6 +13,6 @@ def example():
 def main(host='localhost', port=8080):
     from bottle import run
 
-    run(app, host = host, port = port, server = 'asyncbottle:AsyncServer')
+    run(app, host = host, port = port, server = 'aiobottle:AioServer')
 
 main()
