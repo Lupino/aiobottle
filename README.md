@@ -6,7 +6,7 @@ warper bottle use asynchttp base on  Asyncio (PEP-3156)
 Quick start
 -----------
 
-    from asyncbottle import AsyncBottle
+    from aiobottle import AsyncBottle
     import asynchttp
 
     app = AsyncBottle()
