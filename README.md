@@ -18,6 +18,10 @@ Quick start
 
         return content
 
+    @app.get('/nomal')
+    def nomal():
+        return 'hello word!'
+
     def main(host='localhost', port=8080):
         from bottle import run
 
