@@ -1,5 +1,5 @@
-from bottle import Bottle, ServerAdapter, response, request, HTTPResponse\
-        , HTTPError, tob, _e, _closeiter, html_escape, DEBUG
+from bottle import Bottle, ServerAdapter, response, request, WSGIFileWrapper\
+        , HTTPResponse, HTTPError, tob, _e, _closeiter, html_escape, DEBUG
 from traceback import format_exc
 
 import sys
@@ -7,7 +7,7 @@ import sys
 import logging
 
 import asyncio
-from aiohttp.wsgi import WSGIServerHttpProtocol, FileWrapper
+from aiohttp.wsgi import WSGIServerHttpProtocol
 import inspect
 
 import itertools
@@ -20,7 +20,7 @@ ch = logging.StreamHandler()
 ch.setFormatter(formater)
 logger.addHandler(ch)
 
-class AioServer(ServerAdapter):
+class AsyncServer(ServerAdapter):
     def run(self, handler):
         def wsgi_app(env, start):
             def start_response(status_line, headerlist, exc_info=None):
@@ -41,7 +41,7 @@ class AioServer(ServerAdapter):
         except KeyboardInterrupt:
             pass
 
-class AioBottle(Bottle):
+class AsyncBottle(Bottle):
 
     def _cast(self, out, peek=None):
         """ Try to convert the parameter into something WSGI compatible and set
@@ -85,7 +85,7 @@ class AioBottle(Bottle):
             if 'wsgi.file_wrapper' in request.environ:
                 return request.environ['wsgi.file_wrapper'](out)
             elif hasattr(out, 'close') or not hasattr(out, '__iter__'):
-                return FileWrapper(out)
+                return WSGIFileWrapper(out)
 
         # Handle Iterables. We peek into them to detect their inner type.
         try:

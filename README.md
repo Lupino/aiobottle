@@ -1,19 +1,19 @@
 asyncbottle
 ============
 
-a warper bottle use aiohttp base on Asyncio (PEP-3156)
+warper bottle use asynchttp base on  Asyncio (PEP-3156)
 
 Quick start
 -----------
 
-    from aiobottle import AioBottle
-    import aiohttp
+    from asyncbottle import AsyncBottle
+    import asynchttp
 
-    app = AioBottle()
+    app = AsyncBottle()
 
     @app.get('/')
     def example():
-        rsp = yield from aiohttp.request('GET', 'http://python.org')
+        rsp = yield from asynchttp.request('GET', 'http://python.org')
         content = yield from rsp.read()
 
         return content
@@ -25,7 +25,7 @@ Quick start
     def main(host='localhost', port=8080):
         from bottle import run
 
-        run(app, host = host, port = port, server = 'aiobottle:AioServer')
+        run(app, host = host, port = port, server = 'asyncbottle:AsyncServer')
 
     main()
 
@@ -36,6 +36,6 @@ Python 3.3
 
 asyncio <http://code.google.com/p/tulip>
 
-aiohttp <https://github.com/fafhrd91/aiohttp>
+asynchttp <https://github.com/fafhrd91/asynchttp>
 
 bottle <http://bottlepy.org>
