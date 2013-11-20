@@ -1,5 +1,5 @@
-from bottle import Bottle, ServerAdapter, response, request, WSGIFileWrapper\
-        , HTTPResponse, HTTPError, tob, _e, _closeiter, html_escape, DEBUG
+from bottle import Bottle, ServerAdapter, response, request, HTTPResponse\
+        , HTTPError, tob, _e, html_escape, DEBUG, RouteReset
 from traceback import format_exc
 
 import sys
@@ -9,8 +9,6 @@ import logging
 import asyncio
 from aiohttp.wsgi import WSGIServerHttpProtocol
 import inspect
-
-import itertools
 
 logger = logging.getLogger('asyncbottle')
 FORMAT = '%(asctime)-15s - %(message)s'
@@ -42,6 +40,32 @@ class AsyncServer(ServerAdapter):
             pass
 
 class AsyncBottle(Bottle):
+
+    def _handle(self, environ):
+        try:
+            environ['bottle.app'] = self
+            request.bind(environ)
+            response.bind()
+            route, args = self.router.match(environ)
+            environ['route.handle'] = route
+            environ['bottle.route'] = route
+            environ['route.url_args'] = args
+            out = route.call(**args)
+            if isinstance(out, asyncio.Future) or inspect.isgenerator(out):
+                out = yield from out
+            return out
+        except HTTPResponse:
+            return _e()
+        except RouteReset:
+            route.reset()
+            return (yield from self._handle(environ))
+        except (KeyboardInterrupt, SystemExit, MemoryError):
+            raise
+        except Exception:
+            if not self.catchall: raise
+            stacktrace = format_exc()
+            environ['wsgi.errors'].write(stacktrace)
+            return HTTPError(500, "Internal Server Error", _e(), stacktrace)
 
     def wsgi(self, environ, start_response):
         """ The bottle WSGI-interface. """
