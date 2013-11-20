@@ -43,85 +43,10 @@ class AsyncServer(ServerAdapter):
 
 class AsyncBottle(Bottle):
 
-    def _cast(self, out, peek=None):
-        """ Try to convert the parameter into something WSGI compatible and set
-        correct HTTP headers when possible.
-        Support: False, str, dict, HTTPResponse, HTTPError, file-like,
-        iterable of strings and iterable of strs
-        """
-
-        if isinstance(out, asyncio.Future) or inspect.isgenerator(out):
-            out = yield from out
-
-        # Empty output is done here
-        if not out:
-            if 'Content-Length' not in response:
-                response['Content-Length'] = 0
-            return []
-        # Join lists of byte or str strings. Mixed lists are NOT supported
-        if isinstance(out, (tuple, list))\
-        and isinstance(out[0], (bytes, str)):
-            out = out[0][0:0].join(out) # b'abc'[0:0] -> b''
-        # Encode str strings
-        if isinstance(out, str):
-            out = out.encode(response.charset)
-        # Byte Strings are just returned
-        if isinstance(out, bytes):
-            if 'Content-Length' not in response:
-                response['Content-Length'] = len(out)
-            return [out]
-        # HTTPError or HTTPException (recursive, because they may wrap anything)
-        # TODO: Handle these explicitly in handle() or make them iterable.
-        if isinstance(out, HTTPError):
-            out.apply(response)
-            out = self.error_handler.get(out.status_code, self.default_error_handler)(out)
-            return (yield from self._cast(out))
-        if isinstance(out, HTTPResponse):
-            out.apply(response)
-            return (yield from self._cast(out.body))
-
-        # File-like objects.
-        if hasattr(out, 'read'):
-            if 'wsgi.file_wrapper' in request.environ:
-                return request.environ['wsgi.file_wrapper'](out)
-            elif hasattr(out, 'close') or not hasattr(out, '__iter__'):
-                return WSGIFileWrapper(out)
-
-        # Handle Iterables. We peek into them to detect their inner type.
-        try:
-            iout = iter(out)
-            first = next(iout)
-            while not first:
-                first = next(iout)
-        except StopIteration:
-            return (yield from self._cast(''))
-        except HTTPResponse:
-            first = _e()
-        except (KeyboardInterrupt, SystemExit, MemoryError):
-            raise
-        except Exception:
-            if not self.catchall: raise
-            first = HTTPError(500, 'Unhandled exception', _e(), format_exc())
-
-        # These are the inner types allowed in iterator or generator objects.
-        if isinstance(first, HTTPResponse):
-            return (yield from self._cast(first))
-        elif isinstance(first, bytes):
-            new_iter = itertools.chain([first], iout)
-        elif isinstance(first, str):
-            encoder = lambda x: x.encode(response.charset)
-            new_iter = map(encoder, itertools.chain([first], iout))
-        else:
-            msg = 'Unsupported response type: %s' % type(first)
-            return (yield from self._cast(HTTPError(500, msg)))
-        if hasattr(out, 'close'):
-            new_iter = _closeiter(new_iter, out.close)
-        return new_iter
-
     def wsgi(self, environ, start_response):
         """ The bottle WSGI-interface. """
         try:
-            out = yield from self._cast(self._handle(environ))
+            out = yield from self._cast((yield from self._handle(environ)))
             # rfc2616 section 4.3
             if response._status_code in (100, 101, 204, 304)\
             or environ['REQUEST_METHOD'] == 'HEAD':
