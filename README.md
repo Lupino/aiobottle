@@ -34,7 +34,7 @@ Quick start
 Run on gunicorn
 ---------------
 
-    gunicorn -w 5 -k aiohttp.worker.AsyncGunicornWorker example:app
+    gunicorn -w 5 -k aiobottle.AsyncGunicornWorker example:app
 
 Requirements
 -----------

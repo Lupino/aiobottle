@@ -9,6 +9,7 @@ import logging
 import asyncio
 from aiohttp.wsgi import WSGIServerHttpProtocol
 import inspect
+from aiohttp.worker import AsyncGunicornWorker as _AsyncGunicornWorker
 
 logger = logging.getLogger('asyncbottle')
 FORMAT = '%(asctime)-15s - %(message)s'
@@ -96,3 +97,14 @@ class AsyncBottle(Bottle):
     def __call__(self, environ, start_response):
         ''' Each instance of :class:'Bottle' is a WSGI application. '''
         return (yield from self.wsgi(environ, start_response))
+
+class AsyncGunicornWorker(_AsyncGunicornWorker):
+
+    def factory(self, wsgi, host, port):
+        proto = WSGIServerHttpProtocol(
+            wsgi, loop=self.loop,
+            log=self.log,
+            access_log=self.log.access_log,
+            access_log_format=self.cfg.access_log_format,
+            readpayload=True)
+        return self.wrap_protocol(proto)
