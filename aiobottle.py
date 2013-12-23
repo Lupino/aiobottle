@@ -73,7 +73,7 @@ class AsyncBottle(Bottle):
     def wsgi(self, environ, start_response):
         """ The bottle WSGI-interface. """
         try:
-            out = yield from self._cast((yield from self._handle(environ)))
+            out = self._cast((yield from self._handle(environ)))
             # rfc2616 section 4.3
             if response._status_code in (100, 101, 204, 304)\
             or environ['REQUEST_METHOD'] == 'HEAD':
