@@ -15,7 +15,7 @@ __all__ = ['AsyncServer', 'AsyncBottle', 'AsyncGunicornWorker']
 
 logger = logging.getLogger('asyncbottle')
 FORMAT = '%(asctime)-15s - %(message)s'
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
 formater = logging.Formatter(FORMAT)
 ch = logging.StreamHandler()
 ch.setFormatter(formater)
@@ -28,7 +28,7 @@ class AsyncServer(ServerAdapter):
                 status_code = status_line.split(' ', 1)[0]
                 headerdict = dict(map(lambda x: (x[0].lower(), x[1]), headerlist))
                 length = headerdict.get('content-length', 0)
-                logger.info('{} {} {} {}'.format(env['REQUEST_METHOD'],
+                logger.error('{} {} {} {}'.format(env['REQUEST_METHOD'],
                     env['RAW_URI'], status_code, length))
                 return start(status_line, headerlist, exc_info)
             return handler(env, start_response)
