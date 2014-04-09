@@ -44,18 +44,28 @@ class AsyncServer(ServerAdapter):
 class AsyncBottle(Bottle):
 
     def _handle(self, environ):
+        path = environ['bottle.raw_path'] = environ['PATH_INFO']
+        try:
+            environ['PATH_INFO'] = path.encode('latin1').decode('utf8')
+        except UnicodeError:
+            return HTTPError(400, 'Invalid path string. Expected UTF-8')
+
         try:
             environ['bottle.app'] = self
             request.bind(environ)
             response.bind()
-            route, args = self.router.match(environ)
-            environ['route.handle'] = route
-            environ['bottle.route'] = route
-            environ['route.url_args'] = args
-            out = route.call(**args)
-            if isinstance(out, asyncio.Future) or inspect.isgenerator(out):
-                out = yield from out
-            return out
+            try:
+                self.trigger_hook("before_request")
+                route, args = self.router.match(environ)
+                environ['route.handle'] = route
+                environ['bottle.route'] = route
+                environ['route.url_args'] = args
+                out = route.call(**args)
+                if isinstance(out, asyncio.Future) or inspect.isgenerator(out):
+                    out = yield from out
+                return out
+            finally:
+                self.trigger_hook("after_request")
         except HTTPResponse:
             return _e()
         except RouteReset:
