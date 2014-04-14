@@ -43,6 +43,6 @@ Python 3.3
 
 asyncio <http://code.google.com/p/tulip>
 
-aiohttp <https://github.com/fafhrd91/aiohttp>
+aiohttp <https://github.com/KeepSafe/aiohttp>
 
 bottle <http://bottlepy.org>
